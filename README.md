@@ -24,4 +24,4 @@ da Vinci Boxes
 ![Pinout](pinout.png)
 
 ###Rev 3 pinout
-![pin](ledbrd_r3_detail.png)
+![pin](ledboard_r3_detail.png)
