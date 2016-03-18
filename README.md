@@ -1,6 +1,6 @@
 # daVinci-Boxes
 da Vinci Boxes
-
+![ledboard](ledbrd_r3.png)
 ## Board Pinout ##
 
 | Board |  ADC0   |   ADC1  |   ADC2   |
@@ -20,5 +20,8 @@ da Vinci Boxes
 
 
 ## pinout ##
-
+###Rev 2 pinout
 ![Pinout](pinout.png)
+
+###Rev 3 pinout
+![pin](ledbrd_r3_detail.png)
