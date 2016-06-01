@@ -13,6 +13,9 @@
 
 led_state logic,rail1,rail2,rail3;
 
+unsigned long int rail1_upper,rail1_lower,rail2_upper,rail2_lower,rail3_upper,rail3_lower;
+
+int sw = 0;
 int main(void)
 {
     const int msecsDelayPost = 10;
@@ -23,6 +26,11 @@ int main(void)
     initTimer();
 
     while (1) {
+        // read sw
+    DDRB &= ~0x07;
+    PORTB |= 0x07; // turn on pullups
+    sw = (PINB & 0x07);
+    //sw = 0x07;
 	checkRails();
 		 _delay_ms(10);
 	//setLED(1, YELLOW);
@@ -42,6 +50,38 @@ void checkRails(){
 		else { set_1_GRN();	}
 		*/
 		
+				switch(sw){
+		  case MTM:
+		    rail1_upper = v12uppper;
+		    rail1_lower = v12lower;
+		    rail2_upper = v24upper;
+		    rail2_lower = v24lower;
+		    rail3_upper = v12uppper;
+		    rail3_lower = v12lower;break;
+		  case PSM:
+		    rail1_upper = v12uppper;
+		    rail1_lower = v12lower;
+		    rail2_upper = v24upper;
+		    rail2_lower = v24lower;
+		    rail3_upper = 0;
+		    rail3_lower = 0; break;
+		  case ECM:
+		    rail1_upper = v12uppper;
+		    rail1_lower = v12lower;
+		    rail2_upper = v36upper;
+		    rail2_lower = v36lower;
+		    rail3_upper = 0;
+		    rail3_lower = 0; break;
+		  case SUJ:
+		    rail1_upper = v12uppper;
+		    rail1_lower = v12lower;
+		    rail2_upper = v24upper;
+		    rail2_lower = v24lower;
+		    rail3_upper = v12uppper;
+		    rail3_lower = v12lower; break;
+		
+		}
+		
 		unsigned long int voltage = getAdc(1);
 		voltage = getAdc(0);
 		if (voltage >= rail1_upper) { rail1  = HIGH; }
@@ -49,18 +89,18 @@ void checkRails(){
 		else if ((voltage < rail1_lower) && (voltage >= rail_min )) { rail1= LOW; }
 		else { rail1 = NONE;	}
 
-		voltage = getAdc(1);
+		voltage = getAdc(2);
 		if (voltage >= rail2_upper) { rail2  = HIGH; }
 		else if ((voltage <rail2_upper) && (voltage >= rail2_lower)) { rail2=NOMINAL; }
 		else if ((voltage < rail2_lower) && (voltage >= rail_min )) { rail2= LOW; }
 		else { rail2 = NONE;	}
-#ifdef master
-		voltage = getAdc(2);
+  if (sw==MTM) {
+		voltage = getAdc(1);
 		if (voltage >= rail3_upper) { rail3  = HIGH; }
 		else if ((voltage <rail3_upper) && (voltage >= rail3_lower)) { rail3=NOMINAL; }
 		else if ((voltage < rail3_lower) && (voltage >= rail_min )) { rail3= LOW; }
 		else { rail3 = NONE;	}
-#endif
+  }
 }
 
 void setLEDs(){
@@ -89,19 +129,19 @@ void setLEDs(){
 		case NOMINAL: setLED(1,GREEN);break;
 		case HIGH: setLED(1,YELLOW);break;
 	}
-#ifdef master
-	switch(rail3){
-		case NONE: setLED(2,RED);break;
-		case LOW: setLED(2,RED);break;
-		case NOMINAL: setLED(2,GREEN);break;
-		case HIGH: setLED(2,YELLOW);break;
-	}
-#endif
+  if (sw==MTM) {
+	  switch(rail3){
+		  case NONE: setLED(2,RED);break;
+		  case LOW: setLED(2,RED);break;
+		  case NOMINAL: setLED(2,GREEN);break;
+		  case HIGH: setLED(2,YELLOW);break;
+	  }
+  }
 
-#ifdef master
-#else
+  if (sw==MTM) {
+  } else {
 	set_2_undir();
-#endif
+}
 set_3_undir();
 }
 
@@ -139,11 +179,11 @@ ISR(TIMER1_CMPA_vect){
 
 	if (state & rail2==NONE) {set_1_undir();}
 	else {set_1_dir();}
-#ifdef master
-	if (state & rail3==NONE) {set_2_undir();}
-	else {set_2_dir();}
-#endif
-
+  if (sw==MTM) {
+	  if (state & rail3==NONE) {set_2_undir();}
+	  else {set_2_dir();}
+  }
+  
 	state = ~state;
 }
 

@@ -1,9 +1,10 @@
 # File came from here: http://www.hookersandbooze.com/avr-gcc-makefile/
 
+
 PRG            = monitor
 OBJ            = monitor.o leds.o adc.o
-PROGRAMMER     = avrispv2
-PORT           = /dev/ttyACM0
+PROGRAMMER     = usbasp
+PORT           = usb
 MCU_TARGET     = attiny26
 AVRDUDE_TARGET = t26
 OPTIMIZE       = -Os
